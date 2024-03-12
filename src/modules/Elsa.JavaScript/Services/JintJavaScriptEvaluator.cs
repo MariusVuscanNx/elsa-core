@@ -1,6 +1,8 @@
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
+using System.Text.Unicode;
 using Elsa.Expressions.Helpers;
 using Elsa.Expressions.Models;
 using Elsa.Extensions;
@@ -174,7 +176,11 @@ public class JintJavaScriptEvaluator : IJavaScriptEvaluator
 
     private static string Serialize(object value)
     {
-        var options = new JsonSerializerOptions();
+        var options = new JsonSerializerOptions
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+        };
         options.Converters.Add(new JsonStringEnumConverter());
 
         return JsonSerializer.Serialize(value, options);
